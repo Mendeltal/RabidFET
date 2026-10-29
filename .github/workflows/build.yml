@@ -1,0 +1,25 @@
+name: Build Rabid FET
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get JUCE
+        run: git clone --depth 1 --branch 8.0.6 https://github.com/juce-framework/JUCE.git JUCE
+
+      - name: Configure
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release "-DCMAKE_OSX_ARCHITECTURES=arm64;x86_64"
+
+      - name: Build
+        run: cmake --build build --config Release --target RabidFET_VST3 RabidFET_AU
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RabidFET-macOS
+          path: build/RabidFET_artefacts
